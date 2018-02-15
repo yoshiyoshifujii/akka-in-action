@@ -1,8 +1,8 @@
 package com.goticks
 
 import scala.concurrent.Future
-
 import akka.actor._
+import akka.event.LoggingReceive
 import akka.util.Timeout
 
 object BoxOffice {
@@ -25,23 +25,32 @@ object BoxOffice {
 
 }
 
-class BoxOffice(implicit timeout: Timeout) extends Actor {
+class BoxOffice(implicit timeout: Timeout) extends Actor with ActorLogging {
   import BoxOffice._
   import context._
 
+  implicit class PrintMap(val future: Future[Any]) {
+    def print = future.map { value =>
+      log.debug(s"received returned message $value")
+      value
+    }
+  }
 
   def createTicketSeller(name: String) =
-    context.actorOf(TicketSeller.props(name), name)
+    // TODO: 1.2. TicketSellerアクターを生成する
+    ??? //context.actorOf(TicketSeller.props(name), name)
 
-  def receive = {
+  def receive = LoggingReceive {
     case CreateEvent(name, tickets) =>
       def create() = {
         val eventTickets = createTicketSeller(name)
         val newTickets = (1 to tickets).map { ticketId =>
           TicketSeller.Ticket(ticketId)
         }.toVector
-        eventTickets ! TicketSeller.Add(newTickets)
-        sender() ! EventCreated(Event(name, tickets))
+        // TODO: 1.5. TicketSellerアクターにAddメッセージを送信する
+        //eventTickets ! TicketSeller.Add(newTickets)
+        // TODO: 1.6. 送信元アクターにEventCreatedメッセージを送信する
+        //sender() ! EventCreated(Event(name, tickets))
       }
       context.child(name).fold(create())(_ => sender() ! EventExists)
 
@@ -50,14 +59,19 @@ class BoxOffice(implicit timeout: Timeout) extends Actor {
     case GetTickets(event, tickets) =>
       def notFound() = sender() ! TicketSeller.Tickets(event)
       def buy(child: ActorRef) =
-        child.forward(TicketSeller.Buy(tickets))
+      // TODO: 2.3. TicketSellerアクターにBuyメッセージを送信する(返信先はRestApi)
+      ??? //child.forward(TicketSeller.Buy(tickets))
 
       context.child(event).fold(notFound())(buy)
 
 
     case GetEvent(event) =>
-      def notFound() = sender() ! None
-      def getEvent(child: ActorRef) = child forward TicketSeller.GetEvent
+      def notFound() =
+        // TODO: 3.4. TicketSellerアクターにGetEventメッセージを送信する(返信先はRestApi)
+        ??? //sender() ! None
+      def getEvent(child: ActorRef) =
+        // TODO: 3.5. TicketSellerアクターにGetEventメッセージを送信する(返信先はRestApi)
+        ??? //child forward TicketSeller.GetEvent
       context.child(event).fold(notFound())(getEvent)
 
 
@@ -65,18 +79,23 @@ class BoxOffice(implicit timeout: Timeout) extends Actor {
       import akka.pattern.ask
       import akka.pattern.pipe
 
-      def getEvents = context.children.map { child =>
-        self.ask(GetEvent(child.path.name)).mapTo[Option[Event]]
-      }
-      def convertToEvents(f: Future[Iterable[Option[Event]]]) =
+      def getEvents: Iterable[Future[Option[Event]]] =
+      // TODO: 3.3. 自アクターにGetEventメッセージを送信する(応答あり)
+      ??? //context.children.map { child =>
+      //  self.ask(GetEvent(child.path.name)).print.mapTo[Option[Event]]
+      //}
+      def convertToEvents(f: Future[Iterable[Option[Event]]]): Future[Events] =
         f.map(_.flatten).map(l=> Events(l.toVector))
 
-      pipe(convertToEvents(Future.sequence(getEvents))) to sender()
+      // TODO: 3.6. 送信元アクターに取得したEventsメッセージを返す
+      //pipe(convertToEvents(Future.sequence(getEvents))) to sender()
 
 
     case CancelEvent(event) =>
       def notFound() = sender() ! None
-      def cancelEvent(child: ActorRef) = child forward TicketSeller.Cancel
+      def cancelEvent(child: ActorRef) =
+        // TODO: 4.3. TicketSellerアクターにCancelメッセージを送信する(返信先はRestApi)
+        ??? //child forward TicketSeller.Cancel
       context.child(event).fold(notFound())(cancelEvent)
   }
 }

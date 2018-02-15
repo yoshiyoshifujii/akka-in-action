@@ -1,27 +1,169 @@
-Heroku deployment
+Akka in Action([Akka実践バイブル](https://www.shoeisha.co.jp/book/detail/9784798153278)) workshop
 =================
 
-Heroku normally expects the project to reside in the root of the git repo.
-the source code for the up and running chapter is not in the root of the repo, so you need to use a different command to deploy to heroku:
+This is a project for [Akka in Action workshop](http://2018.scalamatsuri.org/en/candidates/YugoMaede_1/) at Scala Matsuri 2018.
 
-    git subtree push --prefix chapter-up-and-running heroku master
+## The preparation
 
-This command has to be executed from the root of the git repo, not from within the chapter directory.
-The git subtree command is not as featured as the normal push command, for instance, it does not provide a flag to force push,
-and it does not support the <local-branch>:<remote-branch> syntax which you can use with git push:
+You can try creating an Akka application at this workshop, if you prepare the following tools.
 
-    git push heroku my-localbranch:master
+### 1. Git
 
-Which is normally used to deploy from a branch to heroku (pushing a branch to heroku master).
-It is possible to nest commands though, so if you want to push from a branch you can do the following:
+#### Install
+https://git-scm.com/downloads
 
-    git push heroku `git subtree split --prefix chapter-up-and-running my-local-branch`:master
+#### Checking your installation
 
-Where *my-local-branch* is your local branch.
-Forcing a push can be done by nesting commands as well:
+```
+git clone git@github.com:akka-ja/akka-in-action.git
+```
 
-    git push heroku `git subtree split --prefix chapter-up-and-running master`:master --force
+### 2. sbt
+#### Install
+##### Mac
+https://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Mac.html
 
-The above pushes the changes in local master to heroku master.
+##### Windows
+https://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Windows.html
 
+#### Checking your installation
+You need execute the command on the same directory with executing the previous git command.
+
+```
+cd akka-in-action/chapter-up-and-running/
+sbt run
+```
+
+### 3. The tool which send HTTP requests
+
+You can ether use a CLI tool or a GUI tool.
+
+#### (1) CLI tool: HTTPie
+
+##### Install
+https://httpie.org/doc#installation
+
+##### Checking your installation
+
+```
+http POST localhost:5000/events/RHCP tickets:=10
+```
+
+#### (2) GUI tool: Advanced REST client
+##### Install
+https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo
+
+##### Checking your installation
+
+![](images/AdvancedRESTclient.png)
+
+* You can copy the followings
+    * (2) http://localhost:5000/events/RHCP
+    * (6) {"tickets":10}
+
+### 4. IntelliJ IDEA(option)
+##### Install
+https://www.jetbrains.com/idea/download/
+
+
+That's all for your preparation!
+
+
+----
+
+## The commands using this workshop
+
+#### Run the app
+```
+git clone https://github.com/akka-ja/akka-in-action.git
+```
+
+```
+cd akka-in-action/chapter-up-and-running/
+sbt assembly
+ls target/scala-2.12/goticks-assembly-1.0.jar
+java -jar target/scala-2.12/goticks-assembly-1.0.jar
+```
+
+#### HTTP requests
+```
+http POST localhost:5000/events/RHCP tickets:=10
+```
+
+```
+http GET localhost:5000/events
+```
+
+```
+http POST localhost:5000/events/RHCP/tickets tickets:=2
+```
+
+```
+http DELETE localhost:5000/events/RHCP/
+```
+
+### ex.0
+```
+git checkout matsuri
+cd akka-in-action/chapter-up-and-running/
+sbt run
+```
+
+### ex.1
+```
+sbt run
+```
+
+```
+http POST localhost:5000/events/RHCP tickets:=10
+```
+
+### ex.2
+```
+sbt run
+```
+
+```
+http POST localhost:5000/events/RHCP tickets:=10
+http POST localhost:5000/events/RHCP/tickets tickets:=2
+```
+
+### ex.3
+```
+sbt run
+```
+
+```
+http POST localhost:5000/events/RHCP tickets:=10
+http POST localhost:5000/events/RHCP/tickets tickets:=2
+http GET localhost:5000/events/
+```
+
+### ex.4
+```
+sbt run
+```
+
+```
+http POST localhost:5000/events/RHCP tickets:=10
+http POST localhost:5000/events/RHCP/tickets tickets:=2
+http GET localhost:5000/events/
+http DELETE localhost:5000/events/RHCP
+```
+
+### ex.5
+```
+brew install heroku
+```
+
+```
+cd ..
+heroku login
+heroku create
+git subtree push --prefix chapter-up-and-running heroku master
+```
+```
+http POST aaa-bbb-0000.herokuapp.com/events/RHCP tickets:=250
+http POST aaa-bbb-0000.herokuapp.com/events/RHCP/tickets tickets:=4
+```
 

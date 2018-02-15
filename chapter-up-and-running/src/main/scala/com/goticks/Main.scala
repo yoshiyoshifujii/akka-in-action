@@ -24,7 +24,10 @@ object Main extends App
   val host = config.getString("http.host") // 設定からホスト名とポートを取得
   val port = config.getInt("http.port")
 
-  implicit val system = ActorSystem()
+
+  implicit val system =
+    // TODO: 0.0. アクターシステムを生成する
+    ??? //ActorSystem("go-ticks")
   implicit val ec = system.dispatcher  // bindAndHandleは暗黙のExecutionContextが必要
 
   val api = new RestApi(system, requestTimeout(config)).routes // the RestApi provides a Route
