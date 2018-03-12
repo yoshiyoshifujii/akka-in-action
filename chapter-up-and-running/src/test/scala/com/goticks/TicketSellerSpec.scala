@@ -28,7 +28,7 @@ class TickerSellerSpec extends TestKit(ActorSystem("testTickets"))
       nrs.foreach(_ => ticketingActor ! Buy(1))
 
       val tickets = receiveN(9)
-      tickets.zip(nrs).foreach { case (Tickets(event, Vector(Ticket(id))), ix) => id must be(ix) }
+      tickets.zip(nrs).foreach { case (Tickets(_, Vector(Ticket(id))), ix) => id must be(ix) }
 
       ticketingActor ! Buy(1)
       expectMsg(Tickets(event))
@@ -59,11 +59,13 @@ class TickerSellerSpec extends TestKit(ActorSystem("testTickets"))
       val tickets = receiveN(nrBatches)
 
       tickets.zip(batches).foreach {
-        case (Tickets(event, bought), ix) =>
+        case (Tickets(_, bought), ix) =>
           bought.size must equal(secondBatchSize)
           val last = ix * secondBatchSize + firstBatchSize
           val first = ix * secondBatchSize + firstBatchSize - (secondBatchSize - 1)
           bought.map(_.id) must equal((first to last).toVector)
+        case msg =>
+          fail(s"unexpected message: $msg")
       }
 
       ticketingActor ! Buy(1)
