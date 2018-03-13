@@ -1,4 +1,4 @@
-Akka in Action([Akka実践バイブル](https://www.shoeisha.co.jp/book/detail/9784798153278)) workshop
+Akka in Action workshop ([Akka実践バイブル](https://www.shoeisha.co.jp/book/detail/9784798153278))
 =================
 
 This is a project for [Akka in Action workshop](http://2018.scalamatsuri.org/en/candidates/YugoMaede_1/) at Scala Matsuri 2018.
@@ -80,9 +80,7 @@ git clone https://github.com/akka-ja/akka-in-action.git
 
 ```
 cd akka-in-action/chapter-up-and-running/
-sbt assembly
-ls target/scala-2.12/goticks-assembly-1.0.jar
-java -jar target/scala-2.12/goticks-assembly-1.0.jar
+sbt run
 ```
 
 #### HTTP requests
@@ -103,35 +101,66 @@ http DELETE localhost:5000/events/RHCP/
 ```
 
 ### ex.0
+* get the source code
 ```
 git checkout matsuri
-cd akka-in-action/chapter-up-and-running/
+```
+
+* run the app
+```
 sbt run
 ```
 
 ### ex.1
+* run the app
 ```
 sbt run
 ```
+
+* request by CLI
 
 ```
 http POST localhost:5000/events/RHCP tickets:=10
 ```
 
+* request by GUI
+
+```
+localhost:5000/events/RHCP
+{"tickets": 10}
+```
+
 ### ex.2
+* run the app
+
 ```
 sbt run
 ```
+
+* request by CLI
 
 ```
 http POST localhost:5000/events/RHCP tickets:=10
 http POST localhost:5000/events/RHCP/tickets tickets:=2
 ```
 
+* request by GUI
+
+```
+localhost:5000/events/RHCP
+{"tickets": 10}
+localhost:5000/events/RHCP/tickets
+{"tickets": 2}
+```
+
 ### ex.3
+* run the app
+
 ```
 sbt run
 ```
+
+* request by CLI
 
 ```
 http POST localhost:5000/events/RHCP tickets:=10
@@ -139,10 +168,24 @@ http POST localhost:5000/events/RHCP/tickets tickets:=2
 http GET localhost:5000/events/
 ```
 
+* request by GUI
+
+```
+localhost:5000/events/RHCP
+{"tickets": 10}
+localhost:5000/events/RHCP/tickets
+{"tickets": 2}
+localhost:5000/events/
+```
+
 ### ex.4
+* run the app
+
 ```
 sbt run
 ```
+
+* request by CLI
 
 ```
 http POST localhost:5000/events/RHCP tickets:=10
@@ -151,19 +194,42 @@ http GET localhost:5000/events/
 http DELETE localhost:5000/events/RHCP
 ```
 
+* request by GUI
+
+```
+localhost:5000/events/RHCP
+{"tickets": 10}
+localhost:5000/events/RHCP/tickets
+{"tickets": 2}
+localhost:5000/events/
+localhost:5000/events/RHCP
+```
+
+
 ### ex.5
+* install heroku CLI
+
 ```
 brew install heroku
 ```
 
+* push the souce code to heroku
 ```
 cd ..
 heroku login
 heroku create
 git subtree push --prefix chapter-up-and-running heroku master
 ```
+
+* request by CLI
+
 ```
 http POST aaa-bbb-0000.herokuapp.com/events/RHCP tickets:=250
 http POST aaa-bbb-0000.herokuapp.com/events/RHCP/tickets tickets:=4
 ```
 
+* remove the app
+
+```
+heroku apps:destroy --app aaa-bbb-0000.herokuapp
+```
