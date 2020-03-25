@@ -1,22 +1,22 @@
 package com.goticks
 
 import akka.actor.ActorSystem
+import akka.testkit.{ ImplicitSender, TestKit }
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
-import akka.testkit.{ImplicitSender, TestKit}
-
-import org.scalatest.{WordSpecLike, MustMatchers}
-
-class TickerSellerSpec extends TestKit(ActorSystem("testTickets"))
-                         with WordSpecLike
-                         with MustMatchers
-                         with ImplicitSender
-                         with StopSystemAfterAll {
+class TickerSellerSpec
+    extends TestKit(ActorSystem("testTickets"))
+    with AnyWordSpecLike
+    with Matchers
+    with ImplicitSender
+    with StopSystemAfterAll {
   "The TicketSeller" must {
     "Sell tickets until they are sold out" in {
       import TicketSeller._
 
-      def mkTickets = (1 to 10).map(i=>Ticket(i)).toVector
-      val event = "RHCP"
+      def mkTickets      = (1 to 10).map(i => Ticket(i)).toVector
+      val event          = "RHCP"
       val ticketingActor = system.actorOf(TicketSeller.props(event))
 
       ticketingActor ! Add(mkTickets)
@@ -28,7 +28,7 @@ class TickerSellerSpec extends TestKit(ActorSystem("testTickets"))
       nrs.foreach(_ => ticketingActor ! Buy(1))
 
       val tickets = receiveN(9)
-      tickets.zip(nrs).foreach { case (Tickets(event, Vector(Ticket(id))), ix) => id must be(ix) }
+      tickets.zip(nrs).foreach { case (Tickets(_, Vector(Ticket(id))), ix) => id must be(ix) }
 
       ticketingActor ! Buy(1)
       expectMsg(Tickets(event))
@@ -39,9 +39,9 @@ class TickerSellerSpec extends TestKit(ActorSystem("testTickets"))
 
       val firstBatchSize = 10
 
-      def mkTickets = (1 to (10 * firstBatchSize)).map(i=>Ticket(i)).toVector
+      def mkTickets = (1 to (10 * firstBatchSize)).map(i => Ticket(i)).toVector
 
-      val event = "Madlib"
+      val event          = "Madlib"
       val ticketingActor = system.actorOf(TicketSeller.props(event))
 
       ticketingActor ! Add(mkTickets)
@@ -51,19 +51,20 @@ class TickerSellerSpec extends TestKit(ActorSystem("testTickets"))
       expectMsg(Tickets(event, bought))
 
       val secondBatchSize = 5
-      val nrBatches = 18
+      val nrBatches       = 18
 
-      val batches = (1 to nrBatches * secondBatchSize)
+      val batches = 1 to nrBatches * secondBatchSize
       batches.foreach(_ => ticketingActor ! Buy(secondBatchSize))
 
       val tickets = receiveN(nrBatches)
 
       tickets.zip(batches).foreach {
-        case (Tickets(event, bought), ix) =>
+        case (Tickets(_, bought), ix) =>
           bought.size must equal(secondBatchSize)
-          val last = ix * secondBatchSize + firstBatchSize
+          val last  = ix * secondBatchSize + firstBatchSize
           val first = ix * secondBatchSize + firstBatchSize - (secondBatchSize - 1)
           bought.map(_.id) must equal((first to last).toVector)
+        case _ => ???
       }
 
       ticketingActor ! Buy(1)
