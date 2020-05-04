@@ -1,16 +1,16 @@
 package com.goticks.actor
 
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.{ ActorRef, Behavior }
 import com.goticks.domain.model._
 
 object TicketSeller {
 
-  final case class TicketsGot(tickets: Tickets)
-  final case class EventGot(maybe: Option[Event])
-  final case class Canceled(maybe: Option[Event])
+  final case class TicketsGot(tickets: Tickets)   extends CborSerializable
+  final case class EventGot(maybe: Option[Event]) extends CborSerializable
+  final case class Canceled(maybe: Option[Event]) extends CborSerializable
 
-  sealed trait Command
+  sealed trait Command                                                            extends CborSerializable
   final case class Add(tickets: Seq[Ticket])                                      extends Command
   final case class Buy(eventTickets: EventTickets, replyTo: ActorRef[TicketsGot]) extends Command
   final case class GetEvent(replyTo: ActorRef[EventGot])                          extends Command

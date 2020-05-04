@@ -1,19 +1,19 @@
 package com.goticks.route
 
 import akka.actor.typed.scaladsl.AskPattern._
-import akka.actor.typed.{ActorRef, ActorSystem}
+import akka.actor.typed.{ ActorRef, ActorSystem }
 import akka.event.LoggingAdapter
 import akka.util.Timeout
-import com.goticks.domain.model.{EventName, EventTickets}
+import com.goticks.domain.model.{ EventName, EventTickets }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait BoxOfficeApi {
   import com.goticks.actor.BoxOffice._
 
   def log: LoggingAdapter
   def createBoxOffice(): ActorRef[Command]
-  implicit val system: ActorSystem[_]// = ctx.system
+  implicit val system: ActorSystem[_] // = ctx.system
   implicit def executionContext: ExecutionContext
   implicit def requestTimeout: Timeout
 

@@ -6,12 +6,11 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 
 import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 trait Startup extends RequestTimeout {
 
-  private def startHttpServer(api: Route, host: String, port: Int)(
-      implicit system: ActorSystem): Unit = {
+  private def startHttpServer(api: Route, host: String, port: Int)(implicit system: ActorSystem): Unit = {
     implicit val ec: ExecutionContext = system.dispatcher
 
     val bindingFuture = Http().bindAndHandle(api, host, port)
@@ -19,9 +18,7 @@ trait Startup extends RequestTimeout {
     val log = Logging(system.eventStream, "go-ticks")
 
     bindingFuture
-      .map { serverBinding =>
-        log.info(s"RestApi bound to ${serverBinding.localAddress}")
-      }
+      .map { serverBinding => log.info(s"RestApi bound to ${serverBinding.localAddress}") }
       .onComplete {
         case Failure(cause) =>
           log.error(cause, "Failed to bind to {}:{}", host, port)

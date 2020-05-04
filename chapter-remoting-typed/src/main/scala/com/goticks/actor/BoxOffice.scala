@@ -1,45 +1,48 @@
 package com.goticks.actor
 
+import akka.actor.typed.receptionist.ServiceKey
 import akka.actor.typed.scaladsl.AskPattern._
-import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
-import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
+import akka.actor.typed.scaladsl.{ ActorContext, Behaviors }
+import akka.actor.typed.{ ActorRef, ActorSystem, Behavior }
 import akka.util.Timeout
 import com.goticks.domain.model._
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 object BoxOffice {
   def name: String = "boxOffice"
 
-  sealed trait Command
+  lazy val serviceKey: ServiceKey[Command] = ServiceKey(name)
+
+  sealed trait Command extends CborSerializable
 
   final case class CreateEvent(eventName: EventName, eventTickets: EventTickets, replyTo: ActorRef[EventCreated])
       extends Command
-  sealed trait EventCreated
+  sealed trait EventCreated                             extends CborSerializable
   final case class EventCreatedSuccessful(event: Event) extends EventCreated
   final case object EventExists                         extends EventCreated
 
   final case class GetEvent(eventName: EventName, replyTo: ActorRef[EventGot])      extends Command
   final case class WrappedGetEvent(eventGot: EventGot, replyTo: ActorRef[EventGot]) extends Command
-  final case class EventGot(event: Option[Event])
+  final case class EventGot(event: Option[Event])                                   extends CborSerializable
 
   final case class GetEvents(replyTo: ActorRef[EventsGot])                              extends Command
   final case class WrappedGetEvents(eventsGot: EventsGot, replyTo: ActorRef[EventsGot]) extends Command
-  sealed trait EventsGot
-  final case class EventsGotSuccessful(events: Events)    extends EventsGot
-  final case class EventsGotFailure(exception: Throwable) extends EventsGot
+  sealed trait EventsGot                                                                extends CborSerializable
+  final case class EventsGotSuccessful(events: Events)                                  extends EventsGot
+  final case class EventsGotFailure(exception: Throwable)                               extends EventsGot
 
   final case class GetTickets(eventName: EventName, eventTickets: EventTickets, replyTo: ActorRef[TicketsGot])
       extends Command
   final case class WrappedGetTickets(ticketsGot: TicketsGotSuccessful, replyTo: ActorRef[TicketsGot]) extends Command
-  sealed trait TicketsGot
-  final case class TicketsGotSuccessful(tickets: Tickets) extends TicketsGot
-  final case object SoldOut                               extends TicketsGot
+  sealed trait TicketsGot                                                                             extends CborSerializable
+  final case class TicketsGotSuccessful(tickets: Tickets)                                             extends TicketsGot
+  final case object SoldOut                                                                           extends TicketsGot
 
   final case class CancelEvent(eventName: EventName, replyTo: ActorRef[EventCanceled])                extends Command
   final case class WrappedCancelEvent(eventCanceled: EventCanceled, replyTo: ActorRef[EventCanceled]) extends Command
-  final case class EventCanceled(event: Option[Event])
+  final case class EventCanceled(event: Option[Event])                                                extends CborSerializable
 
   trait TicketSellerRefCreator {
 

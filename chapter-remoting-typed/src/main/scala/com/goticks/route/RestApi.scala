@@ -4,8 +4,8 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.goticks.actor.BoxOffice
-import com.goticks.actor.BoxOffice.{EventsGotFailure, EventsGotSuccessful}
-import com.goticks.domain.model.{EventName, EventTickets}
+import com.goticks.actor.BoxOffice.{ EventsGotFailure, EventsGotSuccessful }
+import com.goticks.domain.model.EventName
 
 trait RestApi extends BoxOfficeApi with EventMarshalling {
   import akka.http.scaladsl.model.StatusCodes._
@@ -41,18 +41,18 @@ trait RestApi extends BoxOfficeApi with EventMarshalling {
             }
           }
         } ~
-          get {
-            // GET /events/:event
-            onSuccess(getEvent(eventName)) {
-              _.event.fold(complete(NotFound))(event => complete(OK -> event))
-            }
-          } ~
-          delete {
-            // DELETE /events/:event
-            onSuccess(cancelEvent(eventName)) {
-              _.event.fold(complete(NotFound))(event => complete(OK -> event))
-            }
+        get {
+          // GET /events/:event
+          onSuccess(getEvent(eventName)) {
+            _.event.fold(complete(NotFound))(event => complete(OK -> event))
           }
+        } ~
+        delete {
+          // DELETE /events/:event
+          onSuccess(cancelEvent(eventName)) {
+            _.event.fold(complete(NotFound))(event => complete(OK -> event))
+          }
+        }
       }
     }
 
