@@ -24,7 +24,11 @@ lazy val persistence = project.in(file("chapter-persistence"))
 
 lazy val remoting    = project.in(file("chapter-remoting"))
 
+lazy val `remoting-typed`    = project.in(file("chapter-remoting-typed"))
+
 lazy val routing     = project.in(file("chapter-routing"))
+
+lazy val `routing-typed`     = project.in(file("chapter-routing-typed"))
 
 lazy val state       = project.in(file("chapter-state"))
 
