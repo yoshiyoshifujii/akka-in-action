@@ -1,7 +1,7 @@
-package com.goticks
+package com.goticks.actor
 
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ ActorRef, Behavior }
+import akka.actor.typed.{ActorRef, Behavior}
 import com.goticks.domain.model._
 
 object TicketSeller {

@@ -1,6 +1,7 @@
-package com.goticks
+package com.goticks.actor
 
-import com.goticks.domain.model.{ EventName, EventTickets, Ticket, TicketId, Tickets }
+import com.goticks.StopSystemAfterAll
+import com.goticks.domain.model._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -9,7 +10,7 @@ class TicketSellerTest extends AnyWordSpec with Matchers with StopSystemAfterAll
   "The TicketSeller" must {
 
     "Sell tickets until they are sold out" in {
-      import TicketSeller._
+      import com.goticks.actor.TicketSeller._
 
       def mkTickets      = (1 to 10).map(i => Ticket(TicketId(i)))
       val eventName      = EventName("RHCP")
@@ -33,7 +34,7 @@ class TicketSellerTest extends AnyWordSpec with Matchers with StopSystemAfterAll
     }
 
     "Sell tickets in batches until they are sold out" in {
-      import TicketSeller._
+      import com.goticks.actor.TicketSeller._
 
       val firstBatchSize = 10
 

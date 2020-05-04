@@ -1,8 +1,9 @@
-package com.goticks
+package com.goticks.actor
 
 import akka.actor.typed.ActorRef
 import akka.actor.typed.scaladsl.ActorContext
 import akka.util.Timeout
+import com.goticks.StopSystemAfterAll
 import com.goticks.domain.model._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -14,7 +15,7 @@ class BoxOfficeSpec extends AnyWordSpec with Matchers with StopSystemAfterAll {
   "The BoxOffice" must {
 
     "Create an event and get tickets from the correct Ticket Seller" in {
-      import BoxOffice._
+      import com.goticks.actor.BoxOffice._
 
       val boxOffice = testKit.spawn(BoxOffice())
       val eventName = EventName("RHCP")
@@ -31,7 +32,7 @@ class BoxOfficeSpec extends AnyWordSpec with Matchers with StopSystemAfterAll {
     }
 
     "Create a child actor when an event is created and sends it a Tickets message" in {
-      import BoxOffice._
+      import com.goticks.actor.BoxOffice._
 
       val probe1                                   = testKit.createTestProbe[TicketSeller.Command]
       implicit val creator: TicketSellerRefCreator = (_: ActorContext[Command], _: CreateEvent, _: String) => probe1.ref

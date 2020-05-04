@@ -1,15 +1,16 @@
-package com.goticks
+package com.goticks.actor
 
 import akka.actor.typed.scaladsl.AskPattern._
-import akka.actor.typed.scaladsl.{ ActorContext, Behaviors }
-import akka.actor.typed.{ ActorRef, ActorSystem, Behavior }
+import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.util.Timeout
 import com.goticks.domain.model._
 
 import scala.concurrent.Future
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 object BoxOffice {
+  def name: String = "boxOffice"
 
   sealed trait Command
 
