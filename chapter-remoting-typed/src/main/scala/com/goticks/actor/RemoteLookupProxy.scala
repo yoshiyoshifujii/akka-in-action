@@ -6,7 +6,7 @@ import scala.concurrent.duration._
 
 class RemoteLookupProxy(path: String) extends Actor with ActorLogging {
 
-  context.setReceiveTimeout(33.seconds)
+  context.setReceiveTimeout(3.seconds)
 
   sendIdentifyRequest()
 
